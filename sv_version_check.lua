@@ -30,4 +30,4 @@
 
 ---------------------------------------------------------------------------------------]]--
 
-print(lib.versionCheck('WolfKnight98/wk_wars2x'))
+lib.versionCheck('WolfKnight98/wk_wars2x')
