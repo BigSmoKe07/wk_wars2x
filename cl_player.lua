@@ -35,7 +35,7 @@
 ----------------------------------------------------------------------------------]]--
 PLY =
 {
-	ped = PlayerPedId(),
+	ped = cache.ped,
 	veh = nil,
 	inDriverSeat = false,
 	inPassengerSeat = false,
@@ -95,42 +95,57 @@ end
 -- The main purpose of this thread is to update the information about the local player, including their
 -- ped id, the vehicle id (if they're in one), whether they're in a driver seat, and if the vehicle's class
 -- is valid or not
-Citizen.CreateThread( function()
-	while ( true ) do
-		PLY.ped = PlayerPedId()
-		PLY.veh = GetVehiclePedIsIn( PLY.ped, false )
-		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped
-		PLY.inPassengerSeat = GetPedInVehicleSeat( PLY.veh, 0 ) == PLY.ped
-		PLY.vehClassValid = GetVehicleClass( PLY.veh ) == 18
+-- CreateThread( function()
+-- 	while ( true ) do
+-- 		PLY.ped = PlayerPedId()
+-- 		PLY.veh = GetVehiclePedIsIn( PLY.ped, false )
+-- 		PLY.inDriverSeat = GetPedInVehicleSeat( PLY.veh, -1 ) == PLY.ped
+-- 		PLY.inPassengerSeat = GetPedInVehicleSeat( PLY.veh, 0 ) == PLY.ped
+-- 		PLY.vehClassValid = GetVehicleClass( PLY.veh ) == 18
 
-		Citizen.Wait( 500 )
-	end
-end )
+-- 		Wait( 500 )
+-- 	end
+-- end )
 
 -- This thread is used to check when the player is entering a vehicle and then triggers the sync system 
-Citizen.CreateThread( function()
-	while ( true ) do
-		-- The sync trigger should only start when the player is getting into a vehicle
-		if ( IsPedGettingIntoAVehicle( PLY.ped ) and RADAR:IsPassengerViewAllowed() ) then
-			-- Get the vehicle the player is entering
-			local vehEntering = GetVehiclePedIsEntering( PLY.ped )
+-- CreateThread( function()
+-- 	while ( true ) do
+-- 		-- The sync trigger should only start when the player is getting into a vehicle
+-- 		if ( IsPedGettingIntoAVehicle( PLY.ped ) and RADAR:IsPassengerViewAllowed() ) then
+-- 			-- Get the vehicle the player is entering
+-- 			local vehEntering = GetVehiclePedIsEntering( PLY.ped )
 
-			-- Only proceed if the vehicle the player is entering is an emergency vehicle
-			if ( GetVehicleClass( vehEntering ) == 18 ) then
-				-- Wait two seconds, this gives enough time for the player to get sat in the seat
-				Citizen.Wait( 2000 )
+-- 			-- Only proceed if the vehicle the player is entering is an emergency vehicle
+-- 			if ( GetVehicleClass( vehEntering ) == 18 ) then
+-- 				-- Wait two seconds, this gives enough time for the player to get sat in the seat
+-- 				Wait( 2000 )
 
-				-- Get the vehicle the player is now in
-				local veh = GetVehiclePedIsIn( PLY.ped, false )
+-- 				-- Get the vehicle the player is now in
+-- 				local veh = GetVehiclePedIsIn( PLY.ped, false )
 
-				-- Trigger the main sync data function if the vehicle the player is now in is the same as the one they
-				-- began entering
-				if ( veh == vehEntering ) then
-					SYNC:SyncDataOnEnter()
-				end
-			end
-		end
+-- 				-- Trigger the main sync data function if the vehicle the player is now in is the same as the one they
+-- 				-- began entering
+-- 				if ( veh == vehEntering ) then
+-- 					SYNC:SyncDataOnEnter()
+-- 				end
+-- 			end
+-- 		end
 
-		Citizen.Wait( 500 )
-	end
-end )
+-- 		Wait( 500 )
+-- 	end
+-- end )
+
+lib.onCache('vehicle', function(value)
+	PLY.veh = value
+	PLY.vehClassValid = GetVehicleClass( value ) == 18
+	SYNC:SyncDataOnEnter()
+end)
+
+lib.onCache('ped', function(value)
+	PLY.ped = value
+end)
+
+lib.cache('seat', function(value)
+	PLY.inDriverSeat = value == -1
+	PLY.inPassengerSeat = value == 0
+end)

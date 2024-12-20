@@ -297,13 +297,13 @@ function READER:Main()
 end
 
 -- Main thread
-Citizen.CreateThread( function()
+CreateThread( function()
 	while ( true ) do
 		-- Run the main plate reader function
 		READER:Main()
 
 		-- Wait half a second
-		Citizen.Wait( 500 )
+		Wait( 500 )
 	end
 end )
 
@@ -321,14 +321,14 @@ function READER:RunDisplayValidationCheck()
 end
 
 -- Runs the display validation check for the radar
-Citizen.CreateThread( function()
-	Citizen.Wait( 100 )
+CreateThread( function()
+	Wait( 100 )
 
 	while ( true ) do
 		-- Run the check
 		READER:RunDisplayValidationCheck()
 
 		-- Wait half a second
-		Citizen.Wait( 500 )
+		Wait( 500 )
 	end
 end )

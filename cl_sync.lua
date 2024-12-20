@@ -109,7 +109,7 @@ function READER:LoadDataFromDriver( data )
 	self:BackupData()
 
 	-- As a precaution, give the system 50ms before it replaces the local data with the data from the driver
-	Citizen.SetTimeout( 50, function()
+	SetTimeout( 50, function()
 		-- Set the camera data
 		for cam in UTIL:Values( { "front", "rear" } ) do
 			self:SetReaderCamData( cam, data[cam] )
@@ -223,7 +223,7 @@ function RADAR:LoadDataFromDriver( data )
 	self:BackupData()
 
 	-- As a precaution, give the system 50ms before it replaces the local data with the data from the driver
-	Citizen.SetTimeout( 50, function()
+	SetTimeout( 50, function()
 		-- Set the operator menu settings
 		self:SetOMTableData( data.om )
 
@@ -263,7 +263,7 @@ function RADAR:RestoreFromBackup()
 
 	-- Update the display
 	if ( pwrState ) then
-		Citizen.SetTimeout( 50, function()
+		SetTimeout( 50, function()
 			self:SendSettingUpdate()
 		end )
 	end
